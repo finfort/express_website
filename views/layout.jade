@@ -7,9 +7,9 @@ html(lang='en')
     // The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags
     title #{title}: Express Website
     // Bootstrap core CSS
-    link(href='stylesheets/bootstrap.css', rel='stylesheet')
+    link(href='/stylesheets/bootstrap.css', rel='stylesheet')
     // Custom styles for this template
-    link(href='stylesheets/style.css', rel='stylesheet')
+    link(href='/stylesheets/style.css', rel='stylesheet')
   body
    nav.navbar.navbar-inverse.navbar-fixed-top
       .container
@@ -26,8 +26,19 @@ html(lang='en')
               a(href='/') Home
             li(class=(title === 'About' ? 'active' : ''))
               a(href='/about') About
+            li(class=(title === 'Members' ? 'active' : ''))
+              a(href='/members') Members
             li(class=(title === 'Contact' ? 'active' : ''))
                a(href='/contact') Contact
+          ul.nav.navbar-nav.navbar-right
+            li(class=(title === 'Register' ? 'active' : ''))
+              a(href='/users/register') Register
+            li(class=(title === 'Login' ? 'active' : ''))
+              a(href='/users/login') Login
+            li
+              a(href='/users/logout') Logout
+            
+              
     
 
     

@@ -2,15 +2,28 @@ var express = require('express');
 var path = require('path');
 var favicon = require('serve-favicon');
 var logger = require('morgan');
+var expressValidator = require('express-validator');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var nodemailer = require('nodemailer');
+var session = require('express-session');
+var passport = require('passport');
+var LocalStrategy = require('passport-local').Strategy;
+var multer  = require('multer');
+var flash = require('connect-flash');
+var mongo = require('mongodb');
+var mongoose = require('mongoose');
+var db = mongoose.connection;
+
+
+
 
 
 var routes = require('./routes/index');
 var about = require('./routes/about');
 var users = require('./routes/users');
 var contact = require('./routes/contact');
+var members = require('./routes/members');
 
 var app = express();
 
@@ -18,18 +31,83 @@ var app = express();
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
 
+// Handle file uploads
+//app.use(multer({dest: 'uploads/'}));
+var upload = multer({ dest: './uploads' });
+
+
 // uncomment after placing your favicon in /public
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
+
+
+// Handle express sessions
+app.use(session({
+  secret: 'secret',
+  saveUninitialized: true,
+  resave: true
+}));
+
+
+// Pasport
+app.use(passport.initialize());
+app.use(passport.session());
+
+
+
+// Validator
+// In this example, the formParam value is going to get morphed into form body format useful for printing.
+app.use(expressValidator({
+  errorFormatter: function(param, msg, value) {
+      var namespace = param.split('.')
+      , root    = namespace.shift()
+      , formParam = root;
+
+    while(namespace.length) {
+      formParam += '[' + namespace.shift() + ']';
+    }
+    return {
+      param : formParam,
+      msg   : msg,
+      value : value
+    };
+  }
+}));
+
+
+
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+
+
+
+
+
+
+// Flash
+app.use(flash());
+
+
+// Connect - flash
+// app.use(require('connect-flash'));
+// app.use(function(req,res,next){
+//   res.locals.messages = require('express-messages')(req,res);
+//   next();
+// });
+
+
 
 app.use('/', routes);
 app.use('/about',about);
 app.use('/users', users);
 app.use('/contact', contact);
+app.use('/members', members);
+
+
+
+
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
@@ -37,7 +115,6 @@ app.use(function(req, res, next) {
   err.status = 404;
   next(err);
 });
-
 // error handlers
 
 // development error handler

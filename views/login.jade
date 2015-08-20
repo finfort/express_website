@@ -1,0 +1,15 @@
+extends layout
+
+block content
+	.container
+		h1 Login
+		p Please login user form below
+		form(method="post", action = '/users/login')
+			.form-group
+				label Username
+				input.form-control(name='username', type='text', placeholer='Enter Username')
+			.form-group
+				label Password
+				input.form-control(name='password', type='password', placeholer='Enter Password')
+							
+			button.input.btn.btn-default(name='submit', type='submit') Login
