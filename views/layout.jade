@@ -30,31 +30,34 @@ html(lang='en')
               a(href='/members') Members
             li(class=(title === 'Contact' ? 'active' : ''))
                a(href='/contact') Contact
+          
           ul.nav.navbar-nav.navbar-right
-            li(class=(title === 'Register' ? 'active' : ''))
-              a(href='/users/register') Register
-            li(class=(title === 'Login' ? 'active' : ''))
-              a(href='/users/login') Login
-            li
-              a(href='/users/logout') Logout
+            if !user
+              li(class=(title === 'Register' ? 'active' : ''))
+                a(href='/users/register') Register
+              li(class=(title === 'Login' ? 'active' : ''))
+                a(href='/users/login') Login
+            if user
+              li
+                a(href='/users/logout') Logout
             
-              
-    
-
-    
-
-    block content
-    
-    
-    
-    footer
-      p &copy; 2015, All rigths reserved
-     //
-      Bootstrap core JavaScript
-      ==================================================
-    // Placed at the end of the document so the pages load faster
-    script(src='https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js')
-    script(src='javascripts/bootstrap.js')
-    // IE10 viewport hack for Surface/desktop Windows 8 bug
 
 
+  != messages()
+    
+      
+      block content
+    
+    
+    
+      footer
+        p &copy; 2015, All rigths reserved
+      //
+        Bootstrap core JavaScript
+        ==================================================
+      // Placed at the end of the document so the pages load faster
+      script(src='https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js')
+      script(src='/javascripts/bootstrap.js')
+      // IE10 viewport hack for Surface/desktop Windows 8 bug
+  
+  
