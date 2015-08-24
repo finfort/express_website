@@ -8,6 +8,19 @@ block content
             p Lorem ipsum dolor sit amet, consectetur adipisicing elit. Sit, doloribus amet? Quos totam porro consequatur amet molestiae temporibus architecto, quod, facilis autem tenetur, ipsa possimus accusantium, voluptatem accusamus eum numquam!
             a.btn.btn-primary.btn-lg(href='#') Learn more &raquo;
     .container
+        if posts
+            each post, i in posts
+                .post
+                    h1
+                        a(href='/posts/show/#{post._id}')
+                            =post.title
+                    p.meta Posted in #{post.category} by #{post.author} on #{moment(post.date).format("MM-DD-YYYY")}
+                    img(src="/image/uploads/#{post.mainimage}")
+                    !=truncateText(post.body, 400)
+                    a.more(href='/posts/show/#{post._id}') Read more
+        else
+        
+        p.noposts There are no posts to display
         .row
         .col-md-4
             h2 Abouts us

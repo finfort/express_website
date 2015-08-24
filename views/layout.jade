@@ -28,6 +28,12 @@ html(lang='en')
               a(href='/about') About
             li(class=(title === 'Members' ? 'active' : ''))
               a(href='/members') Members
+              
+            li(class=(title === '' ? 'active' : ''))
+              a(href='/posts/add') Add Post
+            li(class=(title === '' ? 'active' : ''))
+              a(href='/categories/add') Add Category
+              
             li(class=(title === 'Contact' ? 'active' : ''))
                a(href='/contact') Contact
           
@@ -44,20 +50,11 @@ html(lang='en')
 
 
   != messages()
-    
-      
       block content
-    
-    
     
       footer
         p &copy; 2015, All rigths reserved
-      //
-        Bootstrap core JavaScript
-        ==================================================
-      // Placed at the end of the document so the pages load faster
       script(src='https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js')
       script(src='/javascripts/bootstrap.js')
-      // IE10 viewport hack for Surface/desktop Windows 8 bug
   
   

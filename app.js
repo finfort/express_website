@@ -13,6 +13,11 @@ var multer  = require('multer');
 var flash = require('connect-flash');
 var mongo = require('mongodb');
 var mongoose = require('mongoose');
+
+var monk = require('monk')('sa:1@ds035633.mongolab.com:35633/express_website_db');
+
+
+
 var db = mongoose.connection;
 
 
@@ -24,8 +29,18 @@ var about = require('./routes/about');
 var users = require('./routes/users');
 var contact = require('./routes/contact');
 var members = require('./routes/members');
+var posts = require('./routes/posts');
+var categories = require('./routes/categories');
 
 var app = express();
+
+
+app.locals.moment = require('moment');
+
+app.locals.truncateText = function(text,length){
+  var truncatedText = text.substring(0,length);
+  return truncatedText;
+}
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -33,7 +48,7 @@ app.set('view engine', 'jade');
 
 // Handle file uploads
 //app.use(multer({dest: 'uploads/'}));
-var upload = multer({ dest: './uploads' });
+var upload = multer({ dest: './public/images/uploads' });
 
 
 // uncomment after placing your favicon in /public
@@ -97,6 +112,14 @@ app.use(function(req,res,next){
   next();
 });
 
+
+// Set db variable to accessible everywhere
+app.use(function(req,res,next){
+  req.db = db;
+  next();
+  
+});
+
 app.get('*', function(req,res, next){
   
   res.locals.user = req.user || null;
@@ -109,6 +132,8 @@ app.use('/about',about);
 app.use('/users', users);
 app.use('/contact', contact);
 app.use('/members', members);
+app.use('/posts', posts);
+app.use('/categories', categories);
 
 
 
