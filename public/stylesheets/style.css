@@ -118,7 +118,7 @@ ul.success li, ul.info li, ul.error li{
  
  a.more{
    display: block;
-   width: 80px;
+   width: 100px;
    background: #404137;
    color: #fff;
    padding: 10px;
@@ -147,7 +147,7 @@ label{
 
 input[type='text'], select, textarea{
   padding: 3px;
-  height: 20px;
+  /*height: 20px;*/
   width: 200px;
   border: 1px #ccc solid;
 }  

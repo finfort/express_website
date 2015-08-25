@@ -3,9 +3,18 @@ var router = express.Router();
 var passport = require('passport');
 var LocalStrategy = require('passport-local').Strategy;
 var flash = require('connect-flash');
+
 var multer  = require('multer');
 var upload = multer();
 var cpUpload = upload.fields([{ name: 'profileimage', maxCount: 1 }]);
+var http = require('http'),
+    inspect = require('util').inspect;
+var util = require('util');
+
+var Busboy = require('busboy');
+
+var formidable = require('formidable')
+    
 
 var User = require('../models/user');
 
@@ -34,34 +43,66 @@ router.get('/login', function(req,res,next){
 });
 
 router.post('/register',cpUpload, function(req,res,next){
-  
-  
-  //console.log(req);
+
   //get from values
   var name = req.body.name;
   var email = req.body.email;
   var username = req.body.username;
   var password = req.body.password;
   var password2 = req.body.password2;
+  // console.log(req.body);
+  console.dir(req.files);
   
+  var profileImageName;
   
+   // var form = new formidable.IncomingForm();
+ 
+    // form.parse(req, function(err, fields, files) {
+    //   res.writeHead(200, {'content-type': 'text/plain'});
+    //   res.write('received upload:\n\n');
+    //   res.end(util.inspect({fields: fields, files: files}));
+    // });
+    
+  // console.log(req.files);
+   // var busboy = new Busboy({ headers: req.headers });
+    // busboy.on('file', function(fieldname, file, filename, encoding, mimetype) {
+    //   console.log('File [' + fieldname + ']: filename: ' + filename + ', encoding: ' + encoding + ', mimetype: ' + mimetype);
+    //   profileImageName = filename;
+      
+    //   file.on('data', function(data) {
+
+    //     console.log('File [' + fieldname + '] got ' + data.length + ' bytes');
+    //   });
+    //   file.on('end', function() {
+    //     console.log('File [' + fieldname + '] Finished');
+    //   });
+    // });
+    
+    // busboy.on('finish', function() {
+    //   console.log('Done parsing form!');
+    //   res.writeHead(303, { Connection: 'close', Location: '/' });
+    //   res.end();
+    // });
+    //req.pipe(busboy);
   
+    if(!profileImageName)
+      profileImageName = 'noimage.png';
+    
   // check for image
-  if(req.files.profileimage){
-    console.log('uploading file....')
-    //file info
-    var profileImageOriginalName = req.files.profileimage.originalname;
-    var profileImageName         = req.files.profileimage.name;
-    var profileImageMime         = req.files.profileimage.mime;
-    var profileImagePath         = req.files.profileimage.path;
-    var profileImageExtension    = req.files.profileimage.extension;
-    var profileImageSize         = req.files.profileimage.size;
+  // if(req.files.profileimage){
+  //   console.log('uploading file....')
+  //   //file info
+  //   var profileImageOriginalName = req.files.profileimage.originalname;
+  //   var profileImageName         = req.files.profileimage.name;
+  //   var profileImageMime         = req.files.profileimage.mime;
+  //   var profileImagePath         = req.files.profileimage.path;
+  //   var profileImageExtension    = req.files.profileimage.extension;
+  //   var profileImageSize         = req.files.profileimage.size;
     
     
-  }else{
-    // set a default Image
-    var profileImageName = 'noimage.png';
-  }
+  // }else{
+  //   // set a default Image
+  // }
   
   
   //form validation

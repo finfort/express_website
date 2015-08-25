@@ -3,6 +3,9 @@ var router = express.Router();
 var mongo = require('mongodb');
 var db = require('monk')('sa:1@ds035633.mongolab.com:35633/express_website_db');
 var moment = require('moment');
+var multer  = require('multer');
+var upload = multer();
+var cpUpload = upload.fields([{ name: 'mainimage', maxCount: 1 }]);
 
 
 
@@ -17,7 +20,7 @@ router.get('/add', function(req,res,next){
 	
 });
 
-router.post('/add', function(req,res,next){
+router.post('/add',cpUpload, function(req,res,next){
 	//get form values
 	var title 		= req.body.title;
 	var category 	= req.body.category;
@@ -27,12 +30,12 @@ router.post('/add', function(req,res,next){
 	
 	if(req.files.mainimage)
 	{
-		var mainImageOriginalName 	= req.files.mainimage.originalname;
-		var mainImageName 			= req.files.mainimage.name;
-		var mainImageMime           = req.files.mainimage.mime;
-		var mainImagePath           = req.files.mainimage.path;
-		var mainImageExtension      = req.files.mainimage.extension;
-		var mainImageSize           = req.files.mainimage.size; 
+		var mainImageOriginalName = req.files.mainimage.originalname;
+		var mainImageName         = req.files.mainimage.name;
+		var mainImageMime         = req.files.mainimage.mime;
+		var mainImagePath         = req.files.mainimage.path;
+		var mainImageExtension    = req.files.mainimage.extension;
+		var mainImageSize         = req.files.mainimage.size;
 	}else{
 		var mainImageName 			= 'noimage.png';
 	}

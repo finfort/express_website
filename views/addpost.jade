@@ -7,15 +7,16 @@ block content
 		if errors
 			each error, i in errors
 				li.alert.alert-danger #{error.msg}
-	form(method='post', action='/posts/add', enctype = 'multipart/form-data')
+	form(method='post', action='/posts/add',  enctype="multipart/form-data")
 		.form-group
 			label Title
 			input.form-control(name='title', type='text')
 		.form-group
 			label Category
 			select.form-control(name='category', type='text')
-				each category, i in categories
-					option(value='#{category.title}') #{category.title}
+				if categories
+					each category, i in categories
+						option(value='#{category.title}') #{category.title}
 		.form-group
 			label Body
 			input.form-control(name='body', type='text')
@@ -28,7 +29,7 @@ block content
 				option(value='Anatolii Ruchka') Anatolii Ruchka
 				option(value='John Doe') John Doe
 		input.btn.btn-default(name='submit', type='submit', value='Save')
-		script(src='ckeditor/ckeditor.js')
+		script(src='/ckeditor/ckeditor.js')
 		script
 			| CKEDITOR.replace('body');
 		

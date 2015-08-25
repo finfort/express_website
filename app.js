@@ -9,7 +9,8 @@ var nodemailer = require('nodemailer');
 var session = require('express-session');
 var passport = require('passport');
 var LocalStrategy = require('passport-local').Strategy;
-var multer  = require('multer');
+// var multer  = require('multer');
+// var upload = multer({ dest: './public/images/uploads' });
 var flash = require('connect-flash');
 var mongo = require('mongodb');
 var mongoose = require('mongoose');
@@ -22,40 +23,32 @@ var db = mongoose.connection;
 
 
 
-
-
-var routes = require('./routes/index');
-var about = require('./routes/about');
-var users = require('./routes/users');
-var contact = require('./routes/contact');
-var members = require('./routes/members');
-var posts = require('./routes/posts');
-var categories = require('./routes/categories');
-
 var app = express();
+
+// uncomment after placing your favicon in /public
+//app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
+app.use(logger('dev'));
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: false }));// for parsing application/x-www-form-urlencoded
+
+
+
+
 
 
 app.locals.moment = require('moment');
 
 app.locals.truncateText = function(text,length){
-  var truncatedText = text.substring(0,length);
-  return truncatedText;
+  if(text)
+   text = text.substring(0,length);
+  return text;
 }
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
 
-// Handle file uploads
-//app.use(multer({dest: 'uploads/'}));
-var upload = multer({ dest: './public/images/uploads' });
 
-
-// uncomment after placing your favicon in /public
-//app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
-app.use(logger('dev'));
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false }));
 
 
 // Handle express sessions
@@ -126,6 +119,15 @@ app.get('*', function(req,res, next){
   next();
   
 });
+
+var routes = require('./routes/index');
+var about = require('./routes/about');
+var users = require('./routes/users');
+var contact = require('./routes/contact');
+var members = require('./routes/members');
+var posts = require('./routes/posts');
+var categories = require('./routes/categories');
+
 
 app.use('/', routes);
 app.use('/about',about);

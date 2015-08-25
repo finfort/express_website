@@ -17,10 +17,10 @@ router.get('/add', function(req,res,next){
 
 router.post('/add', function(req,res,next){
 	//get form values
-	var categoryname 		= req.body.categoryname;
+	var title 		= req.body.title;
 	
 	//Form validation
-	req.checkBody('categoryname', 'Title fields is required').notEmpty();
+	req.checkBody('title', 'Title fields is required').notEmpty();
 	
 
 	//check errors 
@@ -28,13 +28,13 @@ router.post('/add', function(req,res,next){
 	if(errors){
 		res.render('addcategory', {
 			'errors':errors,
-			'categoryname': categoryname
+			'title': title
 		})
 	}else{
-		var categories = db.get('posts');
+		var categories = db.get('categories');
 		
 		categories.insert({
-			'categoryname': categoryname,
+			'title': title,
 			
 		}, function(err, category){
 			if(err){
