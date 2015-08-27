@@ -14,6 +14,8 @@ var LocalStrategy = require('passport-local').Strategy;
 var flash = require('connect-flash');
 var mongo = require('mongodb');
 var mongoose = require('mongoose');
+var busboy = require('connect-busboy');
+
 
 var monk = require('monk')('sa:1@ds035633.mongolab.com:35633/express_website_db');
 
@@ -31,7 +33,7 @@ app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));// for parsing application/x-www-form-urlencoded
 
-
+app.use(busboy());
 
 
 

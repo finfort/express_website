@@ -4,12 +4,11 @@ var passport = require('passport');
 var LocalStrategy = require('passport-local').Strategy;
 var flash = require('connect-flash');
 
-var multer  = require('multer');
-var upload = multer();
-var cpUpload = upload.fields([{ name: 'profileimage', maxCount: 1 }]);
-var http = require('http'),
-    inspect = require('util').inspect;
-var util = require('util');
+var http = require('http');
+var inspect = require('util').inspect,
+    path = require('path'),
+    os = require('os'),
+    fs = require('fs');
 
 var Busboy = require('busboy');
 
@@ -42,7 +41,7 @@ router.get('/login', function(req,res,next){
   });
 });
 
-router.post('/register',cpUpload, function(req,res,next){
+router.post('/register', function(req,res,next){
 
   //get from values
   var name = req.body.name;
@@ -50,41 +49,54 @@ router.post('/register',cpUpload, function(req,res,next){
   var username = req.body.username;
   var password = req.body.password;
   var password2 = req.body.password2;
+  
+  
   // console.log(req.body);
-  console.dir(req.files);
+  //console.dir(req.files);
   
   var profileImageName;
   
-   // var form = new formidable.IncomingForm();
- 
-    // form.parse(req, function(err, fields, files) {
-    //   res.writeHead(200, {'content-type': 'text/plain'});
-    //   res.write('received upload:\n\n');
-    //   res.end(util.inspect({fields: fields, files: files}));
-    // });
+    var fstream;
+    var result = [];
+    var number_of_files = 1;
+    var counter = 0;
+    var busboy = new Busboy({ headers: req.headers });
+    busboy.on('file', function(fieldname, file, filename, encoding, mimetype) {
+      counter++;
+      console.log("Uploading: " + filename);
+      console.log('File [' + file + '] field ' + fieldname + ' ...');
+      //Path where image will be uploaded
+      if (result.length > 0) {
+          var file_type = filename.substr(filename.length - 4);
+          filename = result[0].name + '_' + number_of_files + file_type;
+          number_of_files++;
+      }
+      fstream = fs.createWriteStream( "./public/images/uploads/" + filename);
+      file.pipe(fstream);
+        fstream.on('close', function() {
+            counter--;
+            console.log("Upload Finished of " + filename);
+            result.push(filename);
+            console.log("result ",result)
+            if(counter == 0){
+                console.log("writing finished");
+                //res.sendStatus(200);
+                
+            }
+        });
+      });
+      busboy.on('field', function(fieldname, val, fieldnameTruncated, valTruncated) {
+        console.log('Field [' + fieldname + ']: value: ' + inspect(val));
+      });
+      busboy.on('finish', function() {
+        console.log('Done parsing form!');
+        res.writeHead(303, { Connection: 'close', Location: '/' });
+        
+        res.end();
+      });
+    // }
+    req.pipe(busboy);// carefull closing busboy
     
-  // console.log(req.files);
-   // var busboy = new Busboy({ headers: req.headers });
-    // busboy.on('file', function(fieldname, file, filename, encoding, mimetype) {
-    //   console.log('File [' + fieldname + ']: filename: ' + filename + ', encoding: ' + encoding + ', mimetype: ' + mimetype);
-    //   profileImageName = filename;
-      
-    //   file.on('data', function(data) {
-
-    //     console.log('File [' + fieldname + '] got ' + data.length + ' bytes');
-    //   });
-    //   file.on('end', function() {
-    //     console.log('File [' + fieldname + '] Finished');
-    //   });
-    // });
-    
-    // busboy.on('finish', function() {
-    //   console.log('Done parsing form!');
-    //   res.writeHead(303, { Connection: 'close', Location: '/' });
-    //   res.end();
-    // });
-    //req.pipe(busboy);
-  
     if(!profileImageName)
       profileImageName = 'noimage.png';
     
@@ -105,44 +117,44 @@ router.post('/register',cpUpload, function(req,res,next){
   // }
   
   
-  //form validation
-  req.checkBody('name','Name field is required').notEmpty();
-  req.checkBody('email','Email field is required').notEmpty();
-  req.checkBody('email','Email not valid').isEmail();
-  req.checkBody('username','Username field is required').notEmpty();
-  req.checkBody('password','Password field is required').notEmpty();
-  req.checkBody('password2','Passwords do not match').equals(req.body.password);
+  // //form validation
+  // req.checkBody('name','Name field is required').notEmpty();
+  // req.checkBody('email','Email field is required').notEmpty();
+  // req.checkBody('email','Email not valid').isEmail();
+  // req.checkBody('username','Username field is required').notEmpty();
+  // req.checkBody('password','Password field is required').notEmpty();
+  // req.checkBody('password2','Passwords do not match').equals(req.body.password);
   
   
-  // Check for errors
+  // // Check for errors
   
-  var errors = req.validationErrors();
+  // var errors = req.validationErrors();
   
-  if(errors){
-    res.render('register', {
-      errors: errors,
-      name: name,
-      email: email,
-      username: username,
-      password: password,
-      password2: password2
-    });
+  // if(errors){
+  //   res.render('register', {
+  //     errors: errors,
+  //     name: name,
+  //     email: email,
+  //     username: username,
+  //     password: password,
+  //     password2: password2
+  //   });
     
-  }else{  
-    console.log('cool');
-    // create User if all Ok
-    var newUser = new User({
-      name: name,
-      email: email,
-      username: username,
-      password: password,
-      profileimage: profileImageName
-    });
+  // }else{  
+  //   console.log('cool');
+  //   // create User if all Ok
+  //   var newUser = new User({
+  //     name: name,
+  //     email: email,
+  //     username: username,
+  //     password: password,
+  //     profileimage: profileImageName
+  //   });
    
-   User.createUser(newUser, function(err, user){
-     if(err) throw err;
-     console.log(user);
-   });
+  //  User.createUser(newUser, function(err, user){
+  //    if(err) throw err;
+  //    console.log(user);
+  //  });
    
    // Success Message
    req.flash('success', "You are now regestered and may log in");
@@ -151,7 +163,7 @@ router.post('/register',cpUpload, function(req,res,next){
    res.location('/');
    res.redirect('/'); 
     
-  }
+  //}
   
 });
 
