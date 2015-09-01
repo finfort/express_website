@@ -7,7 +7,7 @@ block content
 		ul.errors
 			if errors
 				each error, i in errors
-					li.alert.alert-danger #{error.msg}
+					li.alert.alert-danger #{error}
 		form(action='/users/register', method="post", enctype="multipart/form-data")
 			.form-group
 				label Name

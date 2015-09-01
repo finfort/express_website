@@ -15,7 +15,7 @@ block content
                         a(href='/posts/show/#{post._id}')
                             =post.title
                     p.meta Posted in #{post.category} by #{post.author} on #{moment(post.date).format("MM-DD-YYYY")}
-                    img(src="/image/uploads/#{post.mainimage}")
+                    img(src="/images/uploads/#{post.mainimage}")
                     !=truncateText(post.body, 400)
                     a.more(href='/posts/show/#{post._id}') Read more
         else

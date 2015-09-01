@@ -48,24 +48,27 @@ router.get('/login', function (req, res, next) {
     "title": "Login"
   });
 });
-// var cpUpload = upload.fields([{ name: 'avatar', maxCount: 1 },
-router.post('/register', function (req, res, next) {
-
-  var profileImageName;
 
   var name;
   var email;
   var username;
   var password;
   var password2;
+  var errors = [];    
+  
 
+router.post('/register', function (req, res, next) {
+
+  var profileImageName;
+
+  
   var fstream;
   var result = [];
   var number_of_files = 1;
   var counter = 0;
 
-  email = req.params.email; 
-  password = req.body.password;
+  // email = req.params.email;
+  // password = req.body.password;
 
   var busboy = new Busboy({ headers: req.headers });
   busboy.on('file', function (fieldname, file, filename, encoding, mimetype) {
@@ -106,14 +109,15 @@ router.post('/register', function (req, res, next) {
     if (fieldname == "password2")
       password2 = val;
       
-            
+    //check_errors();
+
+
   });
+  
   busboy.on('finish', function () {
     console.log('Done parsing form!');
     //res.writeHead(303, { Connection: 'close', Location: '/' });
     //res.end();
-    
-      
   });
 
   req.pipe(busboy);// carefull closing busboy
@@ -121,70 +125,81 @@ router.post('/register', function (req, res, next) {
   if (!profileImageName)
     profileImageName = 'noimage.png';
     
+    //form validation
+    // req.check('name', 'Name field is required').notEmpty();
+    // req.check('email', 'Email field is required').notEmpty();
+    // req.check('email', 'Email not valid').isEmail();
+    // req.check('username', 'Username field is required').notEmpty();
+    // req.check('password', 'Password field is required').notEmpty();
+    // req.check('password2', 'Passwords do not match').equals(password);
   
-// 50 
-// 0997750769
-  // if (name && email && username && password && password2) {
-     setTimeout(function(){ 
 
-        console.log("timeout");
-        
-        if(name && email && username && password && password2){
-             //form validation
-    req.check('name', 'Name field is required').notEmpty();
-    req.check('email', 'Email field is required').notEmpty();
-    req.check('email', 'Email not valid').isEmail();
-    req.check('username', 'Username field is required').notEmpty();
-    req.check('password', 'Password field is required').notEmpty();
-    req.check('password2', 'Passwords do not match').equals(password);
+    
+    
+    //if(name && email && username && password && password2){
+      setTimeout( function(){
+      check_errors();
+    
+      // Check for errors
+      //var errors = req.validationErrors();
+      if (errors.length > 0) {
+        res.render('register', {
+          errors: errors,
+          name: name,
+          email: email,
+          username: username,
+          password: password,
+          password2: password2
+        });
   
+      } else {
+        console.log('cool creating user');
+        // create User if all Ok
+        var newUser = new User({
+          name: name,
+          email: email,
+          username: username,
+          password: password,
+          profileimage: profileImageName
+        });
   
-    // Check for errors
+        User.createUser(newUser, function (err, user) {
+          if (err) throw err;
+          console.log(user);
+        });
+    
+        // Success Message
+        req.flash('success', "You are now regestered and may log in");
   
-    var errors = req.validationErrors();
-
-    if (errors) {
-      res.render('register', {
-        errors: errors,
-        name: name,
-        email: email,
-        username: username,
-        password: password,
-        password2: password2
-      });
-
-    } else {
-      console.log('cool');
-      // create User if all Ok
-      var newUser = new User({
-        name: name,
-        email: email,
-        username: username,
-        password: password,
-        profileimage: profileImageName
-      });
-
-      User.createUser(newUser, function (err, user) {
-        if (err) throw err;
-        console.log(user);
-      });
-   
-      // Success Message
-      req.flash('success', "You are now regestered and may log in");
-
-
-      res.location('/');
-      res.redirect('/');
-
+        res.location('/');
+        res.redirect('/');
+  
+      }
+      
+      }, 3000);
+    //}else{
+      //check_errors();
     //}
 
-    }
-        }
-    
-    }, 3000);  
- 
-
 });
+
+ function check_errors() {
+    if (name == "") {
+      errors[0] = "Name field is required";
+    }
+    if (email == "") {
+      errors[1] = "Email field is required";
+    }
+    if (username == "") {
+      errors[2] = "Username field is required";
+    }
+    if (password == "") {
+      errors[3] = "Password field is required";
+    }
+    if (password !== password2) {
+      errors[4] = "Passwords do not match";
+    }
+  }
 
 passport.serializeUser(function (user, done) {
   done(null, user.id);
