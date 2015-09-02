@@ -176,7 +176,7 @@ router.post('/register', function (req, res, next) {
   
       }
       
-      }, 3000);
+      }, 1000);
     //}else{
       //check_errors();
     //}

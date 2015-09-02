@@ -43,7 +43,6 @@ router.post('/add',  function (req, res, next) {
 	busboy.on('file', function (fieldname, file, filename) {
 		counter++;
 		console.log("Uploading: " + filename);
-		console.log('File [' + file + '] field ' + fieldname + ' ...');
 		//Path where image will be uploaded
 		if (result.length > 0) {
 			var file_type = filename.substr(filename.length - 4);
