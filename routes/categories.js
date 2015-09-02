@@ -3,6 +3,19 @@ var router = express.Router();
 var mongo = require('mongodb');
 var db = require('monk')('sa:1@ds035633.mongolab.com:35633/express_website_db');
 
+router.get('/show/:category', function(req, res, next){
+	
+	//var db = req.db;
+	var posts = db.get('posts');
+	posts.find({category: req.params.category}, {},  function(err, posts){
+		res.render('index', {
+			'title':req.params.category,
+			"posts": posts
+			// 'categories': categories
+		});	
+	});
+	
+});
 
 router.get('/add', function(req,res,next){
 	// var categories  = db.get('categories');

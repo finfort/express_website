@@ -13,6 +13,18 @@ var inspect = require('util').inspect,
   fs = require('fs');
 var Busboy = require('busboy');
 
+var indexRoute = require('./index.js');
+
+router.get('/show/:id', function (req, res, next) {
+
+	var posts = db.get('posts');
+	posts.findById(req.params.id, function (err, post) {
+		res.render('show', {
+			'post': post
+		});
+	});
+
+});
 
 router.get('/add', function(req,res,next){
 	var categories  = db.get('categories');
@@ -102,12 +114,7 @@ router.post('/add',  function (req, res, next) {
 	// }
 	
 	
-	//Form validation
-	// req.checkBody('title', 'Title fields is required').notEmpty();
-	// req.checkBody('bodyMain', 'Body fields is required').notEmpty();
-
-	//check errors 
-	//var errors = req.validationErrors();
+	
 	
 	  setTimeout( function(){
 		  
@@ -160,5 +167,60 @@ function check_errors() {
     }
    
   }
+  
+  router.post('/addcomment', cpUpload, function (req, res, next) {
+	//get form values
+	var name = req.body.name;
+	var body = req.body.body;
+	var email = req.body.email;
+	var postid = req.body.postid;
+	var commentdate = new Date();
+
+	
+	//Form validation
+	req.checkBody('name', 'Name field is required').notEmpty();
+	req.checkBody('body', 'Body field is required').notEmpty();
+	req.checkBody('email', 'Email field is required').notEmpty();
+	req.checkBody('email', 'Email is not formatted correctly').isEmail();
+
+	// check errors 
+	var errors = req.validationErrors();
+
+		if (errors) {
+			var posts = db.get('posts');
+			posts.findById(postid, function(err,post){
+				res.render('show', {
+					'errors': errors,
+					'post': post
+				})
+			})
+			
+		} else {
+			var comment = {'name': name, 'email':email, 'body': body,'commentdate':commentdate};
+			
+			// insert post
+			var posts = db.get('posts');
+	
+			posts.update({
+				'_id': postid
+			},
+			{
+				$push:{
+					'comments':comment
+				}
+			},
+			function(err, doc){
+				if(err) {
+					throw err;
+				}else{
+					req.flash('success', 'Comment Added');
+					res.location('/posts/show/'+postid);
+					res.redirect('/posts/show/'+postid);
+				}
+			}
+			);
+		}
+		
+});
 
 module.exports = router;
